@@ -1,8 +1,9 @@
 /* 画面を更新したら CACHE の数字を1つ増やすこと（古い画面が残るため） */
-var CACHE = 'excelquest-v1';
+var CACHE = 'excelquest-v2';
 var FILES = [
   './',
   './index.html',
+  './install.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
