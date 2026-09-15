@@ -288,13 +288,15 @@ h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:i
 
 /* ---------- PCの大きい画面：トップは画像・コース・設定をスクロールなしで1画面に ---------- */
 @media (min-width:900px) and (min-height:600px){
+  /* 画像は横いっぱい。高さは1画面に収まるぶんだけにして、上下を少しトリミング */
   .hero{
     height:max(220px,calc(100vh - 350px));height:max(220px,calc(100svh - 350px));
-    width:calc((100vh - 350px) * 1244 / 848);width:calc((100svh - 350px) * 1244 / 848);
-    max-width:calc(100% - 32px);margin-bottom:12px;border-radius:0 0 22px 22px;
+    width:100%;max-width:none;margin-bottom:12px;border-radius:0 0 22px 22px;
   }
-  .hero .bg{height:100%;aspect-ratio:auto}
-  .hero-cap{padding:36px 20px 12px}
+  .hero .bg{height:100%;aspect-ratio:auto;object-fit:cover;object-position:center 72%}
+  .hero .pens .boy{left:40%}
+  .hero .pens .girl{left:60%}
+  .hero-cap{padding:36px max(20px,calc((100% - 940px) / 2)) 12px}
   .hero-cap h1{font-size:clamp(24px,4.6vh,44px)}
   .hero-cap p{font-size:13px;margin-top:2px}
 
