@@ -210,11 +210,12 @@ h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:i
 /* スマホ：問題画面の下に小さなペンギン、「次の問題へ」は画面下の真ん中に固定 */
 .mascot-sm{display:none}
 @media(max-width:719px){
-  #quiz .wrap{padding-bottom:200px}
-  /* 解答するまでは画面下の真ん中にペンギン。解答したら消して「次の問題へ」を左はしに出す */
+  #quiz .wrap{padding-bottom:96px}
+  /* 解答するまでは選択肢のすぐ下の真ん中にペンギン（高さは画面に残ったすき間に合わせてJSで最大255px）。
+     選択肢の下に置くので上に重なることはない。解答したら消して「次の問題へ」を左はしに出す */
   .mascot-sm{
-    display:block;position:fixed;left:50%;translate:-50% 0;bottom:6px;z-index:25;pointer-events:none;
-    height:min(170px,22vh);height:min(170px,22svh);
+    display:flex;justify-content:center;margin-top:10px;pointer-events:none;
+    height:255px;
   }
   .mascot-sm.gone{display:none}
   .mascot-sm img{height:100%;width:auto;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
@@ -455,11 +456,11 @@ h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:i
         <div class="qmeta" id="qmeta"></div>
         <div class="qtext" id="qtext"></div>
         <div class="choices" id="choices"></div>
+        <div class="mascot-sm" id="mascotSm" aria-hidden="true"><img src="assets/pen-boy.png" alt=""></div>
         <div id="verdictSlot" aria-live="polite"></div>
       </div>
     </div>
     <span class="mark-sm" id="markSm" aria-hidden="true"></span>
-    <div class="mascot-sm" id="mascotSm" aria-hidden="true"><img src="assets/pen-boy.png" alt=""></div>
   </div>
 </section>
 
@@ -808,6 +809,15 @@ function renderQuestion(){
   document.querySelectorAll(".choice").forEach(b=>{
     b.onclick = ()=>answer(+b.dataset.i);
   });
+  sizeMascotSm();
+}
+// スマホのペンギン：選択肢の下から画面の下までのすき間に収まる高さにする（最大255px・最小100px）
+function sizeMascotSm(){
+  const el = $("#mascotSm");
+  if(innerWidth > 719){ el.style.height = ""; return; }
+  const top = $("#choices").getBoundingClientRect().bottom + window.scrollY + 10;
+  const space = innerHeight - top - 8;
+  el.style.height = Math.max(100, Math.min(255, Math.floor(space))) + "px";
 }
 // 〇✖マーク（✖は絵文字表示にならないよう異体字セレクタ FE0E を付ける）
 function setMark(kind){
@@ -862,7 +872,7 @@ function answer(pick){
     <div class="nextrow"><button class="btn ${q.course.tone==='pink'?'pink':''}" id="nextBtn">${S.i+1<S.list.length?"次の問題へ":"結果を見る"}</button></div>`;
   $("#nextBtn").focus();
   $("#nextBtn").onclick = ()=>{
-    if(S.i+1 < S.list.length){ S.i++; renderQuestion(); }
+    if(S.i+1 < S.list.length){ S.i++; window.scrollTo(0,0); renderQuestion(); }
     else finish();
   };
 }
@@ -932,6 +942,8 @@ $("#resetAll").onclick = ()=>{
     store.save(); renderHome();
   }
 };
+// 画面の向きを変えたときなどにペンギンの大きさを合わせ直す
+window.addEventListener("resize", ()=>{ if(!screens.quiz.hidden) sizeMascotSm(); });
 document.addEventListener("keydown", e=>{
   if(screens.quiz.hidden) return;
   const idx = ["1","2","3","4","5"].indexOf(e.key);
