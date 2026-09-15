@@ -206,6 +206,21 @@ h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:i
 .mascot.hop img{animation:hop .5s ease}
 @keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-16px)}}
 .mascot.shake img{animation:shake .4s ease}
+
+/* スマホ：問題画面の下に小さなペンギン、「次の問題へ」は画面下の真ん中に固定 */
+.mascot-sm{display:none}
+@media(max-width:719px){
+  #quiz .wrap{padding-bottom:170px}
+  .mascot-sm{
+    display:block;position:fixed;left:8px;bottom:6px;z-index:25;pointer-events:none;
+    height:min(120px,16vh);height:min(120px,16svh);
+  }
+  .mascot-sm img{height:100%;width:auto;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.5))}
+  .mascot-sm.hop img{animation:hop .5s ease}
+  .mascot-sm.shake img{animation:shake .4s ease}
+  .nextrow{position:fixed;left:50%;bottom:18px;translate:-50% 0;margin:0;z-index:26}
+  .nextrow .btn{padding:14px 34px;font-size:16px;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 
 /* 正解＝赤い〇 / 不正解＝青い✖（PCはペンギンの上、スマホは画面中央にふわっと） */
@@ -442,6 +457,7 @@ h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:i
       </div>
     </div>
     <span class="mark-sm" id="markSm" aria-hidden="true"></span>
+    <div class="mascot-sm" id="mascotSm" aria-hidden="true"><img src="assets/pen-boy.png" alt=""></div>
   </div>
 </section>
 
@@ -767,8 +783,10 @@ function renderQuestion(){
   const q = S.list[S.i];
   const pink = q.course.tone==="pink";
   $("#mascot").className = "mascot";
+  $("#mascotSm").className = "mascot-sm";
   setMark("");
   $("#mascot").querySelector("img").src = pink ? "assets/pen-girl.png" : "assets/pen-boy.png";
+  $("#mascotSm").querySelector("img").src = pink ? "assets/pen-girl.png" : "assets/pen-boy.png";
   document.documentElement.style.setProperty("--accent", pink?"var(--bloom)":"var(--ice)");
   $("#qtext").style.borderLeftColor = pink ? "var(--bloom)" : "var(--ice)";
 
@@ -820,6 +838,7 @@ function answer(pick){
   });
 
   $("#mascot").className = "mascot " + (ok?"hop":"shake");
+  $("#mascotSm").className = "mascot-sm " + (ok?"hop":"shake");
   setMark(ok?"ok":"ng");
   beep(ok?"ok":"ng");
 
