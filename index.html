@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>エクセル関数クエスト</title>
+<meta name="description" content="1セクション3分。ペンギンと一緒にExcel関数を覚える4択クイズ。">
+<link rel="icon" href="assets/face-boy.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#070B1E;
+  --nebula:#131A3C;
+  --panel:#1B2350;
+  --panel-hi:#28336B;
+  --line:#3E4A93;
+  --ice:#79E8C0;
+  --bloom:#FFA6D8;
+  --star:#F2F5FF;
+  --dim:#A3ADD9;
+  --go:#3DD68C;
+  --miss:#FF8A9B;
+  --gold:#FFD166;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--void);
+  color:var(--star);
+  font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-weight:500;
+  line-height:1.75;
+  -webkit-text-size-adjust:100%;
+  min-height:100vh;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(121,232,192,.18), transparent 60%),
+    radial-gradient(900px 500px at 95% 5%, rgba(255,166,216,.14), transparent 60%),
+    linear-gradient(rgba(7,11,30,.86),rgba(7,11,30,.94)),
+    url(assets/hero-bg.jpg) center/cover no-repeat,
+    var(--void);
+}
+code,.f{font-family:ui-monospace,"SFMono-Regular",Consolas,"Courier New",monospace;font-weight:500}
+button{font-family:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--ice);outline-offset:3px;border-radius:6px}
+.wrap{width:min(940px,100% - 32px);margin-inline:auto;padding-bottom:64px}
+.screen[hidden]{display:none}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;border-radius:0 0 28px 28px;overflow:hidden;
+  margin-bottom:28px;
+}
+.hero .bg{width:100%;height:auto;display:block;aspect-ratio:1244/848;object-fit:cover}
+.hero .pens{position:absolute;inset:0;pointer-events:none}
+.hero .pens img{
+  position:absolute;bottom:7%;width:auto;translate:-50% 0;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));
+  animation:float 5s ease-in-out infinite;
+}
+.hero .pens .boy{left:34%;height:83%}
+.hero .pens .girl{left:69%;height:79%;animation-delay:-2.5s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5%)}}
+.hero-cap{
+  position:absolute;left:0;right:0;bottom:0;padding:56px 24px 20px;
+  background:linear-gradient(to top,rgba(7,11,30,.94) 35%,rgba(7,11,30,0));
+}
+.hero-cap h1{
+  margin:0;font-size:clamp(28px,6.4vw,50px);font-weight:900;letter-spacing:.02em;line-height:1.15;
+  text-shadow:0 2px 18px rgba(7,11,30,.9);
+}
+.hero-cap p{margin:6px 0 0;color:var(--dim);font-size:clamp(13px,3.2vw,16px)}
+
+/* ---------- shared blocks ---------- */
+h2{font-size:19px;font-weight:900;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:inline-block}
+.section{margin-bottom:34px}
+.card{
+  background:linear-gradient(160deg,var(--panel),var(--nebula));
+  border:1px solid var(--line);border-radius:var(--r);
+}
+
+/* ---------- course list ---------- */
+.courses{display:grid;gap:14px}
+@media(min-width:680px){.courses{grid-template-columns:1fr 1fr}}
+.course{
+  display:block;width:100%;text-align:left;color:inherit;
+  background:linear-gradient(160deg,var(--panel),var(--nebula));
+  border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 18px 16px;transition:border-color .15s,transform .15s;
+}
+.course:hover,.course:focus-visible{border-color:var(--ice);transform:translateY(-2px)}
+.course .top{display:flex;align-items:baseline;gap:10px}
+.course .lv{font-size:12px;color:var(--void);background:var(--ice);border-radius:999px;padding:2px 10px;font-weight:900;white-space:nowrap}
+.course.pink .lv{background:var(--bloom)}
+.course h3{margin:0;font-size:17px;font-weight:900;flex:1}
+.course .desc{margin:8px 0 14px;color:var(--dim);font-size:13.5px;line-height:1.6}
+.meter{height:7px;border-radius:99px;background:#0D142F;overflow:hidden}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--ice),var(--bloom));width:0}
+.course .stat{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);margin-top:7px}
+.course .stat b{color:var(--gold);font-weight:900}
+
+/* ---------- options row ---------- */
+.optrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13.5px;color:var(--dim)}
+.toggle{
+  display:inline-flex;align-items:center;gap:8px;background:var(--panel);
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--star);font-size:13.5px;
+}
+.toggle input{accent-color:var(--ice);width:16px;height:16px}
+.toggle.vol{gap:10px;color:var(--dim)}
+.toggle.vol input[type=range]{width:96px;height:4px;accent-color:var(--bloom)}
+.bgmbtn{
+  position:fixed;right:14px;bottom:14px;z-index:20;
+  width:50px;height:50px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(19,26,60,.92);color:var(--star);font-size:19px;
+  display:grid;place-items:center;backdrop-filter:blur(6px);
+}
+.bgmbtn.off{color:#6D77A8}
+
+/* ---------- review box ---------- */
+.review{padding:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.review img{width:64px;height:61px;border-radius:14px;flex:none}
+.review .txt{flex:1;min-width:180px}
+.review .txt p{margin:0;font-size:13.5px;color:var(--dim)}
+.review .txt strong{display:block;font-size:16px;color:var(--star);font-weight:900}
+.btn{
+  border:none;border-radius:999px;padding:12px 22px;font-size:15px;
+  background:var(--ice);color:#06122B;
+}
+.btn.pink{background:var(--bloom)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--star)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+
+/* ---------- badges ---------- */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}
+.badge{
+  text-align:center;padding:16px 10px;border-radius:14px;
+  background:var(--nebula);border:1px dashed var(--line);
+}
+.badge .icon{font-size:30px;line-height:1.2;filter:grayscale(1) opacity(.35)}
+.badge .nm{font-size:13px;font-weight:900;color:var(--dim);margin-top:4px}
+.badge .hint{font-size:11.5px;color:#6D77A8;line-height:1.5}
+.badge.on{border:1px solid var(--gold);background:linear-gradient(160deg,#2E2A4F,#191F44);box-shadow:0 0 0 3px rgba(255,209,102,.1)}
+.badge.on .icon{filter:none}
+.badge.on .nm{color:var(--gold)}
+
+/* ---------- quiz ---------- */
+#quiz::before{
+  content:"";position:fixed;inset:0;z-index:-1;
+  background:
+    linear-gradient(to bottom,rgba(7,11,30,.55) 0%,rgba(7,11,30,.35) 50%,rgba(7,11,30,.7) 100%),
+    url(assets/hero-bg.jpg) center 70%/cover no-repeat,
+    var(--void);
+}
+.qhead{display:flex;align-items:center;gap:12px;padding:18px 0 14px}
+.qhead .back{background:none;border:none;color:var(--dim);font-size:14px;padding:6px 4px}
+.qhead .title{flex:1;font-size:14px;color:var(--dim);font-weight:700;text-align:center}
+.qhead .timer{font-size:14px;color:var(--ice);font-weight:900;min-width:52px;text-align:right}
+.steps{display:flex;gap:5px;margin-bottom:22px}
+.steps i{flex:1;height:6px;border-radius:99px;background:#0D142F}
+.steps i.done{background:var(--go)}
+.steps i.bad{background:var(--miss)}
+.steps i.now{background:var(--ice)}
+
+.stage{display:flex;gap:16px;align-items:flex-end}
+.mascot{width:132px;flex:none;display:none}
+@media(min-width:720px){.mascot{display:block;margin-left:32px}}
+.mascot img{width:100%;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5))}
+.mascot.hop img{animation:hop .5s ease}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-16px)}}
+.mascot.shake img{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* 正解＝赤い〇 / 不正解＝青い✖（PCはペンギンの上、スマホは画面中央にふわっと） */
+:root{--maru:#FF3B4E;--batsu:#3D8BFF}
+.mascot{position:relative}
+.mark,.mark-sm{
+  font-weight:900;line-height:1;pointer-events:none;
+  text-shadow:0 0 3px #fff,0 0 14px rgba(255,255,255,.45),0 4px 14px rgba(0,0,0,.6);
+}
+.mark{position:absolute;left:50%;top:-16px;translate:-50% -100%;font-size:76px;opacity:0}
+.mark.ok,.mark.ng{opacity:1;animation:pop .35s ease-out}
+.mark.ok,.mark-sm.ok{color:var(--maru)}
+.mark.ng,.mark-sm.ng{color:var(--batsu)}
+.mark,.mark-sm{text-align:center}
+.mark .sym,.mark-sm .sym{display:block}
+.mark .say,.mark-sm .say{display:block;white-space:nowrap;font-size:33px;margin-bottom:6px}
+.mark.ok .say,.mark-sm.ok .say{color:#FF6FB5}
+.mark.ng .say,.mark-sm.ng .say{color:var(--batsu)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.mark-sm{display:none}
+@media(max-width:719px){
+  .mark-sm.ok,.mark-sm.ng{
+    display:block;position:fixed;left:50%;top:42%;translate:-50% -50%;z-index:30;
+    font-size:150px;opacity:0;animation:popfade .9s ease-out forwards;
+  }
+  .mark-sm .say{font-size:57px}
+}
+@keyframes popfade{0%{transform:scale(.3);opacity:0}25%{transform:scale(1.1);opacity:1}60%{transform:scale(1);opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.mark-sm{display:none!important}}
+.vm{font-size:1.25em;font-weight:900;line-height:1}
+.vm.ok{color:var(--maru)}
+.vm.ng{color:var(--batsu)}
+
+.qbox{flex:1;min-width:0}
+.qmeta{font-size:12.5px;color:var(--dim);margin-bottom:8px}
+.qmeta .star{color:var(--gold);letter-spacing:.1em}
+.qtext{
+  background:linear-gradient(160deg,var(--panel),var(--nebula));
+  border:1px solid var(--line);border-left:5px solid var(--ice);
+  border-radius:var(--r);padding:20px 20px;font-size:clamp(16px,4.2vw,19px);font-weight:700;line-height:1.7;
+}
+.qtext .f{display:inline-block;background:#0D142F;border-radius:7px;padding:2px 9px;color:var(--ice);font-size:.95em}
+.qtext .sheet{margin-top:12px;border-collapse:collapse;font-size:13.5px;font-weight:500}
+.qtext .sheet td,.qtext .sheet th{border:1px solid var(--line);padding:5px 12px;text-align:center;color:var(--star)}
+.qtext .sheet th{background:#0D142F;color:var(--dim);font-weight:700}
+
+.choices{display:grid;gap:10px;margin-top:16px}
+.choice{
+  display:flex;gap:12px;align-items:center;width:100%;text-align:left;
+  background:var(--panel);border:2px solid var(--line);border-radius:14px;
+  padding:16px 16px;color:var(--star);font-size:16px;font-weight:700;min-height:60px;
+  transition:border-color .12s,background .12s;
+}
+.choice:hover:not([disabled]){border-color:var(--ice);background:var(--panel-hi)}
+.choice .key{
+  width:28px;height:28px;flex:none;border-radius:8px;background:#0D142F;color:var(--dim);
+  display:grid;place-items:center;font-size:13px;
+}
+.choice .lbl{flex:1;word-break:break-word}
+.choice.right{border-color:var(--go);background:rgba(61,214,140,.14)}
+.choice.right .key{background:var(--go);color:#062114}
+.choice.wrong{border-color:var(--miss);background:rgba(255,138,155,.12)}
+.choice.wrong .key{background:var(--miss);color:#2B0710}
+.choice[disabled]{cursor:default;opacity:1}
+
+.verdict{margin-top:18px;border-radius:var(--r);padding:18px;border:1px solid var(--line);background:var(--nebula)}
+.verdict.ok{border-color:var(--go)}
+.verdict.ng{border-color:var(--miss)}
+.verdict .vt{font-size:17px;font-weight:900;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.verdict.ok .vt{color:var(--go)}
+.verdict.ng .vt{color:var(--miss)}
+.verdict dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.verdict dt{color:var(--dim);white-space:nowrap;font-weight:700}
+.verdict dd{margin:0}
+.verdict dd .f{background:#0D142F;border-radius:6px;padding:2px 8px;color:var(--ice);display:inline-block;font-size:13.5px;word-break:break-all}
+.verdict .note{margin:12px 0 0;font-size:14px;color:var(--dim);line-height:1.7}
+.nextrow{display:flex;justify-content:flex-end;margin-top:16px}
+
+/* ---------- result ---------- */
+.result{
+  text-align:center;padding:30px 20px;overflow:hidden;
+  background:
+    linear-gradient(to bottom,rgba(7,11,30,.15) 0%,rgba(7,11,30,.55) 45%,rgba(7,11,30,.92) 100%),
+    url(assets/hero-bg.jpg) center 75%/cover no-repeat,
+    var(--nebula);
+}
+.result img{width:180px;margin:0 auto;display:block;filter:drop-shadow(0 14px 28px rgba(0,0,0,.5))}
+.result .score{font-size:46px;font-weight:900;margin:12px 0 0;line-height:1.1}
+.result .score span{font-size:20px;color:var(--dim)}
+.result .msg{margin:6px 0 4px;font-size:16px;font-weight:700}
+.result .sub{margin:0;color:var(--dim);font-size:13.5px}
+.result .won{margin:18px auto 0;max-width:340px;border:1px solid var(--gold);border-radius:14px;padding:14px;background:rgba(255,209,102,.08)}
+.result .won .icon{font-size:30px}
+.result .won .nm{font-weight:900;color:var(--gold)}
+.result .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+.foot{text-align:center;color:#6D77A8;font-size:12px;padding:10px 0 0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ トップ ============ -->
+<section class="screen" id="home">
+  <header class="hero">
+    <img class="bg" src="assets/hero-bg.jpg" alt="" width="1244" height="848">
+    <div class="pens" role="img" aria-label="宇宙船のデッキに立つ2羽のペンギン">
+      <img class="boy" src="assets/pen-boy.png" alt="" width="492" height="815">
+      <img class="girl" src="assets/pen-girl.png" alt="" width="440" height="702">
+    </div>
+    <div class="hero-cap">
+      <h1>エクセル関数クエスト</h1>
+      <p>1セクション3分。ペンギンと一緒に、使える関数から覚えよう。</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="section">
+      <h2><i class="pip"></i>コースをえらぶ</h2>
+      <div class="courses" id="courseList"></div>
+    </div>
+
+    <div class="section">
+      <div class="optrow">
+        <label class="toggle"><input type="checkbox" id="timerOn" checked>タイマーを表示する</label>
+        <label class="toggle"><input type="checkbox" id="soundOn" checked>効果音を鳴らす</label>
+        <label class="toggle"><input type="checkbox" id="musicOn" checked>BGMを流す</label>
+        <label class="toggle vol"><span>音量</span><input type="range" id="musicVol" min="0" max="100" value="35" aria-label="BGMの音量"></label>
+      </div>
+      <audio id="bgm" src="assets/kankanFX.mp3" loop preload="none"></audio>
+    </div>
+
+    <div class="section">
+      <h2><i class="pip"></i>要復習リスト</h2>
+      <div class="card review">
+        <img src="assets/face-girl.png" alt="" aria-hidden="true">
+        <div class="txt">
+          <strong id="reviewCount">まだ0問</strong>
+          <p id="reviewNote">まちがえた問題はここにたまります。正解するとリストから消えます。</p>
+        </div>
+        <button class="btn pink" id="reviewStart" disabled>復習する</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><i class="pip"></i>バッジ</h2>
+      <div class="badges" id="badgeList"></div>
+    </div>
+
+    <p class="foot">学習記録はこの端末のブラウザだけに保存されます。<button class="btn ghost" id="resetAll" style="font-size:12px;padding:6px 14px;margin-left:6px">記録を消す</button></p>
+  </div>
+</section>
+
+<button class="bgmbtn" id="bgmToggle" title="BGMの再生／停止" aria-label="BGMの再生と停止">♪</button>
+
+<!-- ============ クイズ ============ -->
+<section class="screen" id="quiz" hidden>
+  <div class="wrap">
+    <div class="qhead">
+      <button class="back" id="quitBtn">← やめる</button>
+      <div class="title" id="quizTitle"></div>
+      <div class="timer" id="timer">0:00</div>
+    </div>
+    <div class="steps" id="steps"></div>
+    <div class="stage">
+      <div class="mascot" id="mascot"><span class="mark" id="mark" aria-hidden="true"></span><img src="assets/pen-boy.png" alt="" aria-hidden="true"></div>
+      <div class="qbox">
+        <div class="qmeta" id="qmeta"></div>
+        <div class="qtext" id="qtext"></div>
+        <div class="choices" id="choices"></div>
+        <div id="verdictSlot" aria-live="polite"></div>
+      </div>
+    </div>
+    <span class="mark-sm" id="markSm" aria-hidden="true"></span>
+  </div>
+</section>
+
+<!-- ============ 結果 ============ -->
+<section class="screen" id="result" hidden>
+  <div class="wrap">
+    <div class="card result" id="resultCard"></div>
+  </div>
+</section>
+
+<script>
+/* =========================================================
+   問題データ
+   type: 1=役割から関数名 / 2=やりたいことから式 / 3=結果の予想
+   ========================================================= */
+const COURSES = [
+  {
+    id:"basic", name:"超基本", lv:"★☆☆", tone:"ice",
+    desc:"SUM・AVERAGE・COUNT など、まず最初に覚える10個。",
+    badge:{icon:"🐧", name:"基本関数マスター"},
+    qs:[
+      {t:1,q:"選んだ範囲の数値をぜんぶ足す関数はどれ？",c:["SUM","COUNT","MAX","AVERAGE"],a:0,
+       s:"=SUM(範囲)",e:"=SUM(A1:A10)",n:"範囲は A1:A10 のようにコロンでつなぎます。"},
+      {t:1,q:"選んだ範囲の平均値を計算する関数はどれ？",c:["AVERAGE","MEDIAN","SUM","ROUND"],a:0,
+       s:"=AVERAGE(範囲)",e:"=AVERAGE(B2:B11)",n:"空白セルは計算からはずれ、0とは扱われません。"},
+      {t:1,q:"指定した範囲にある「数値の」個数を数える関数はどれ？",c:["COUNT","COUNTA","SUM","LEN"],a:0,
+       s:"=COUNT(範囲)",e:"=COUNT(A1:A20)",n:"文字も含めて数えたいときは COUNTA を使います。"},
+      {t:1,q:"範囲の中でいちばん大きい値を返す関数はどれ？",c:["MAX","MIN","LARGE","TOP"],a:0,
+       s:"=MAX(範囲)",e:"=MAX(C2:C50)",n:"いちばん小さい値は MIN。ペアで覚えると楽です。"},
+      {t:3,q:"<span class='f'>=MAX(10, 50, 30)</span> の結果はどれ？",c:["10","30","50","90"],a:2,
+       s:"=MAX(数値1, 数値2, …)",e:"=MAX(10,50,30) → 50",n:"MAXは合計ではなく「最大値」。足し算の90にはなりません。"},
+      {t:3,q:"A1=5、A2は空白、A3=10 のとき <span class='f'>=SUM(A1:A3)</span> の結果は？",c:["5","10","15","エラー"],a:2,
+       s:"=SUM(範囲)",e:"=SUM(A1:A3) → 15",n:"空白セルは0として扱われるので、そのまま合計されます。"},
+      {t:2,q:"A1からA5の平均を出したい。正しい式はどれ？",c:["=AVERAGE(A1:A5)","=AVERAGE(A1,A5)","=AVG(A1:A5)","=AVERAGE(A1〜A5)"],a:0,
+       s:"=AVERAGE(範囲)",e:"=AVERAGE(A1:A5)",n:"カンマだと A1とA5の2つだけ。連続した範囲はコロンでつなぎます。"},
+      {t:1,q:"文字も数値もふくめて「空白でないセル」の個数を数える関数は？",c:["COUNTA","COUNT","COUNTBLANK","SUM"],a:0,
+       s:"=COUNTA(範囲)",e:"=COUNTA(A1:A100)",n:"名簿の人数を数えるときによく使います。"},
+      {t:3,q:"<span class='f'>=ROUND(3.456, 1)</span> の結果はどれ？",c:["3","3.4","3.5","3.46"],a:2,
+       s:"=ROUND(数値, 桁数)",e:"=ROUND(3.456,1) → 3.5",n:"桁数1は「小数第1位まで残す」。第2位を四捨五入します。"},
+      {t:2,q:"B2からB20の合計を、小数点以下を四捨五入して整数にしたい。正しい式は？",c:["=ROUND(SUM(B2:B20),0)","=SUM(ROUND(B2:B20))","=ROUND(B2:B20,0)","=SUM(B2:B20,0)"],a:0,
+       s:"=ROUND(数値, 桁数)",e:"=ROUND(SUM(B2:B20),0)",n:"関数は入れ子にできます。内側のSUMが先に計算されます。"}
+    ]
+  },
+  {
+    id:"cond", name:"条件つき", lv:"★★☆", tone:"pink",
+    desc:"IF・COUNTIF・SUMIF。「もし〜なら」を使いこなす10問。",
+    badge:{icon:"🔀", name:"IF関数攻略"},
+    qs:[
+      {t:1,q:"条件によって表示する内容を変えたいとき使う関数はどれ？",c:["IF","SWITCH","CHOOSE","AND"],a:0,
+       s:"=IF(条件, 真のとき, 偽のとき)",e:'=IF(A1>=80,"合格","不合格")',n:"引数は3つ。条件・YESのとき・NOのとき、の順です。"},
+      {t:2,q:"A1が80以上なら「合格」、それ以外は「不合格」と表示したい。正しい式は？",
+       c:['=IF(A1>=80, "合格", "不合格")','=IF(A1>=80, "不合格", "合格")','=COUNTIF(A1>=80, "合格")','=IF(A1>=80) THEN "合格"'],a:0,
+       s:"=IF(条件, 真のとき, 偽のとき)",e:'=IF(A1>=80,"合格","不合格")',n:"文字はダブルクォーテーションで囲みます。囲まないとエラーになります。"},
+      {t:1,q:"条件に合うセルが何個あるか数える関数はどれ？",c:["COUNTIF","SUMIF","COUNT","IF"],a:0,
+       s:"=COUNTIF(範囲, 条件)",e:'=COUNTIF(B2:B50,"東京")',n:"「合計」ならSUMIF、「個数」ならCOUNTIF。"},
+      {t:2,q:'B2:B50の中から「東京」の件数を数えたい。正しい式は？',
+       c:['=COUNTIF(B2:B50, "東京")','=COUNTIF("東京", B2:B50)','=COUNT(B2:B50, "東京")','=SUMIF(B2:B50, "東京")'],a:0,
+       s:"=COUNTIF(範囲, 条件)",e:'=COUNTIF(B2:B50,"東京")',n:"引数は「どこを・なにで」の順。逆にすると動きません。"},
+      {t:1,q:"条件に合う行の数値だけを合計する関数はどれ？",c:["SUMIF","COUNTIF","SUM","IF"],a:0,
+       s:"=SUMIF(条件の範囲, 条件, 合計する範囲)",e:'=SUMIF(A2:A50,"りんご",C2:C50)',n:"3つめを省くと、1つめの範囲がそのまま合計されます。"},
+      {t:3,q:'<span class="f">=IF(10&gt;5, "○", "×")</span> の結果はどれ？',c:['○','×','TRUE','エラー'],a:0,
+       s:"=IF(条件, 真のとき, 偽のとき)",e:'=IF(10>5,"○","×") → ○',n:"10は5より大きいので条件はTRUE。2つめの引数が表示されます。"},
+      {t:3,q:'A1:A5 に 90, 75, 80, 60, 100 が入っている。<span class="f">=COUNTIF(A1:A5,"&gt;=80")</span> の結果は？',c:["2","3","4","345"],a:1,
+       s:"=COUNTIF(範囲, 条件)",e:'=COUNTIF(A1:A5,">=80") → 3',n:"90・80・100の3つ。比較の条件はダブルクォーテーションで囲みます。"},
+      {t:2,q:"A1が80以上「かつ」B1が80以上のときだけ「合格」にしたい。正しい式は？",
+       c:['=IF(AND(A1>=80,B1>=80),"合格","不合格")','=IF(OR(A1>=80,B1>=80),"合格","不合格")','=IF(A1>=80 AND B1>=80,"合格","不合格")','=AND(IF(A1>=80),IF(B1>=80))'],a:0,
+       s:"=AND(条件1, 条件2, …)",e:'=IF(AND(A1>=80,B1>=80),"合格","不合格")',n:"どちらか一方でOKなら OR を使います。"},
+      {t:1,q:"複数の条件をすべて満たす件数を数えたいときの関数は？",c:["COUNTIFS","COUNTIF","SUMIFS","COUNTA"],a:0,
+       s:"=COUNTIFS(範囲1, 条件1, 範囲2, 条件2, …)",e:'=COUNTIFS(B:B,"東京",C:C,">=80")',n:"末尾の S は「複数条件」の合図。SUMIFS も同じ考え方です。"},
+      {t:2,q:"計算結果がエラーのときだけ空欄にしたい。正しい式は？",
+       c:['=IFERROR(A1/B1, "")','=IF(A1/B1, "", ERROR)','=ERROR(A1/B1, "")','=IFNA(A1/B1)'],a:0,
+       s:"=IFERROR(値, エラーのとき)",e:'=IFERROR(A1/B1,"")',n:'"" は空の文字列。0除算の #DIV/0! を隠すのによく使います。'}
+    ]
+  },
+  {
+    id:"lookup", name:"検索・参照", lv:"★★☆", tone:"ice",
+    desc:"VLOOKUP・XLOOKUP と絶対参照。表から値を引っぱる10問。",
+    badge:{icon:"🔭", name:"VLOOKUP踏破"},
+    qs:[
+      {t:1,q:"表のいちばん左の列を検索して、同じ行の別の列の値を取り出す関数は？",c:["VLOOKUP","HLOOKUP","INDEX","SEARCH"],a:0,
+       s:"=VLOOKUP(検索値, 範囲, 列番号, 検索方法)",e:"=VLOOKUP(A2,商品表!A:C,3,FALSE)",n:"Vは Vertical（縦）。左端列を縦に探しにいきます。"},
+      {t:2,q:"VLOOKUPの引数の正しい順番はどれ？",
+       c:["検索値 → 範囲 → 列番号 → 検索方法","範囲 → 検索値 → 列番号 → 検索方法","検索値 → 列番号 → 範囲 → 検索方法","範囲 → 列番号 → 検索値 → 検索方法"],a:0,
+       s:"=VLOOKUP(検索値, 範囲, 列番号, 検索方法)",e:"=VLOOKUP(A2,$D$2:$F$50,3,FALSE)",n:"「なにを・どこから・何列目・どう探す」と唱えると覚えやすいです。"},
+      {t:2,q:"VLOOKUPで「完全に一致するものだけ」を探したい。4つめの引数は？",c:["FALSE（または0）","TRUE（または1）","空欄","EXACT"],a:0,
+       s:"=VLOOKUP(検索値, 範囲, 列番号, FALSE)",e:"=VLOOKUP(A2,D:F,3,FALSE)",n:"省略するとTRUE扱いになり、近い値を拾って誤った結果になりがちです。"},
+      {t:3,q:'D列=商品コード、E列=商品名、F列=単価の表がある。単価を取り出すときの列番号は？ <span class="f">=VLOOKUP(A2, D:F, ?, FALSE)</span>',c:["1","2","3","6"],a:2,
+       s:"列番号は範囲の左端を1として数える",e:"=VLOOKUP(A2,D:F,3,FALSE)",n:"シート全体のD列=4列目、ではありません。あくまで指定した範囲の中で何番目か。"},
+      {t:1,q:"検索列より「左側」の値も取り出せる、新しい検索関数はどれ？",c:["XLOOKUP","VLOOKUP","HLOOKUP","LOOKUPX"],a:0,
+       s:"=XLOOKUP(検索値, 検索範囲, 戻り範囲)",e:"=XLOOKUP(A2,D:D,C:C)",n:"列番号を数えなくてよく、既定が完全一致なので扱いやすい関数です。"},
+      {t:1,q:"表の「1行目」を横方向に検索する関数はどれ？",c:["HLOOKUP","VLOOKUP","MATCH","ROW"],a:0,
+       s:"=HLOOKUP(検索値, 範囲, 行番号, 検索方法)",e:"=HLOOKUP(\"4月\",A1:M2,2,FALSE)",n:"Hは Horizontal（横）。月別の横並び表などで使います。"},
+      {t:1,q:"MATCH関数が返すものはどれ？",c:["範囲の中で何番目にあるかという位置","検索した値そのもの","一致した個数","一致したセルの色"],a:0,
+       s:"=MATCH(検索値, 範囲, 0)",e:"=MATCH(\"単価\",A1:F1,0) → 6",n:"INDEXと組み合わせると、VLOOKUPより柔軟な検索ができます。"},
+      {t:2,q:"式をコピーしても参照範囲がずれないようにしたい。正しい書き方は？",c:["$D$2:$F$50","D2:F50","#D2:#F50","\"D2:F50\""],a:0,
+       s:"$列$行 で絶対参照",e:"=VLOOKUP(A2,$D$2:$F$50,3,FALSE)",n:"F4キーで $ を付け外しできます。参照表の範囲は絶対参照が基本。"},
+      {t:3,q:"VLOOKUPの結果に <span class='f'>#N/A</span> と表示された。いちばん多い原因は？",c:["検索値が表の中に見つからない","列番号が0","範囲が広すぎる","Excelのバージョンが古い"],a:0,
+       s:"#N/A = Not Available",e:"=IFERROR(VLOOKUP(…),\"該当なし\")",n:"余分なスペースや、数値と文字列の違いでも起きます。"},
+      {t:2,q:"見つからないときに「該当なし」と表示したい。正しい式は？",
+       c:['=IFERROR(VLOOKUP(A2,D:F,3,FALSE),"該当なし")','=VLOOKUP(A2,D:F,3,FALSE,"該当なし")','=IF(VLOOKUP(A2,D:F,3,FALSE)=#N/A,"該当なし")','=ERROR(VLOOKUP(A2,D:F,3),"該当なし")'],a:0,
+       s:"=IFERROR(値, エラーのとき)",e:'=IFERROR(VLOOKUP(A2,D:F,3,FALSE),"該当なし")',n:"VLOOKUP全体をIFERRORで包むのが定番の形です。"}
+    ]
+  },
+  {
+    id:"text", name:"文字・日付", lv:"★★☆", tone:"pink",
+    desc:"LEFT・LEN・TODAY など、住所や名簿の整理で効く8問。",
+    badge:{icon:"✂️", name:"データ整形の達人"},
+    qs:[
+      {t:1,q:"文字列の左から指定した文字数を取り出す関数はどれ？",c:["LEFT","RIGHT","MID","TRIM"],a:0,
+       s:"=LEFT(文字列, 文字数)",e:'=LEFT("東京都新宿区",3) → 東京都',n:"右からなら RIGHT、途中からなら MID です。"},
+      {t:3,q:'<span class="f">=RIGHT("A1234", 4)</span> の結果はどれ？',c:["A123","1234","A1234","4"],a:1,
+       s:"=RIGHT(文字列, 文字数)",e:'=RIGHT("A1234",4) → 1234',n:"右端から4文字。先頭のAだけが落ちます。"},
+      {t:1,q:"文字列が何文字あるかを数える関数はどれ？",c:["LEN","COUNT","LENGTH","SIZE"],a:0,
+       s:"=LEN(文字列)",e:'=LEN("エクセル") → 4',n:"入力チェック（郵便番号が7桁か等）でよく使います。"},
+      {t:3,q:'<span class="f">=MID("2026-04-01", 6, 2)</span> で取り出せるのはどれ？',c:["04","20","26","-0"],a:0,
+       s:"=MID(文字列, 開始位置, 文字数)",e:'=MID("2026-04-01",6,2) → 04',n:"左端を1文字目として数えます。6文字目から2文字分。"},
+      {t:1,q:"今日の日付を表示する関数はどれ？",c:["TODAY","NOW","DATE","DAY"],a:0,
+       s:"=TODAY()",e:"=TODAY()",n:"引数はありませんが、カッコは必要です。時刻まで欲しいときは NOW()。"},
+      {t:2,q:"A1の姓とB1の名を、間に全角スペースを入れてつなげたい。正しい式は？",
+       c:['=A1&"　"&B1','=A1+B1','=A1&B1&"　"','=CONCAT(A1 B1)'],a:0,
+       s:"=文字列1 & 文字列2",e:'=A1&"　"&B1',n:"& でつなぎます。CONCAT(A1,\"　\",B1) でも同じ結果になります。"},
+      {t:1,q:"前後の余分なスペースを取り除く関数はどれ？",c:["TRIM","CLEAN","SUBSTITUTE","REPLACE"],a:0,
+       s:"=TRIM(文字列)",e:'=TRIM("  山田 太郎  ") → 山田 太郎',n:"貼り付けたデータがVLOOKUPで見つからないとき、まず疑う関数です。"},
+      {t:2,q:"A1の日付から「年」だけを取り出したい。正しい式は？",c:["=YEAR(A1)","=LEFT(A1,4)","=DATE(A1)","=TEXT(A1)"],a:0,
+       s:"=YEAR(シリアル値)",e:"=YEAR(A1) → 2026",n:"月は MONTH、日は DAY。日付は内部では数値なのでLEFTでは取り出せません。"}
+    ]
+  }
+];
+
+const BADGES = [
+  ...COURSES.map(c=>({id:c.id, icon:c.badge.icon, name:c.badge.name, hint:`${c.name}を全問正解`})),
+  {id:"review", icon:"🔁", name:"復習マスター", hint:"要復習リストを空にする"},
+  {id:"all", icon:"🏆", name:"全コース制覇", hint:"4コースすべて全問正解"}
+];
+
+/* ========================= 保存（この端末のみ） ========================= */
+const KEY = "excel-quiz-penguin-v1";
+const store = {
+  data:{best:{}, badges:[], review:[], hadReview:false, timer:true, sound:true, music:true, vol:0.35},
+  load(){ try{ const r = localStorage.getItem(KEY); if(r) Object.assign(this.data, JSON.parse(r)); }catch(e){} },
+  save(){ try{ localStorage.setItem(KEY, JSON.stringify(this.data)); }catch(e){} }
+};
+store.load();
+
+/* ========================= BGM（自作曲 kankanFX） ========================= */
+const bgm = document.getElementById("bgm");
+const AC = window.AudioContext || window.webkitAudioContext;
+let ac = null, bgmGain = null;
+// スマホは最初のタップの中で音声を「解錠」しておかないと、効果音が遅れたり鳴らなかったりする
+function unlockAudio(){
+  if(!AC) return;
+  try{
+    if(!ac){
+      ac = new AC({latencyHint:"interactive"});
+      // iPhoneは audio.volume を変えられないので、http(s)で開いたときは GainNode 経由で音量を調整
+      // （file:// で直接開いたときに経由すると無音になるブラウザがあるため、その場合は使わない）
+      if(location.protocol.startsWith("http")){
+        const src = ac.createMediaElementSource(bgm);
+        bgmGain = ac.createGain();
+        src.connect(bgmGain); bgmGain.connect(ac.destination);
+      }
+      // 無音を一度鳴らして出力を起こしておく
+      const s = ac.createBufferSource();
+      s.buffer = ac.createBuffer(1,1,22050); s.connect(ac.destination); s.start(0);
+    }
+    if(ac.state !== "running") ac.resume();
+  }catch(e){}
+}
+function applyVol(){
+  if(bgmGain){ bgmGain.gain.value = store.data.vol; bgm.volume = 1; }
+  else bgm.volume = store.data.vol;
+}
+function syncBgmUI(){
+  const on = store.data.music;
+  const btn = document.getElementById("bgmToggle");
+  btn.classList.toggle("off", !on);
+  btn.textContent = on ? "♪" : "🔇";
+  const cb = document.getElementById("musicOn"); if(cb) cb.checked = on;
+  const vl = document.getElementById("musicVol"); if(vl) vl.value = Math.round(store.data.vol*100);
+}
+function playBgm(){
+  if(!store.data.music) return;
+  applyVol();
+  const p = bgm.play();
+  if(p && p.catch) p.catch(()=>{});   // 自動再生がブロックされたら次の操作で再挑戦
+}
+function setMusic(on){
+  store.data.music = on; store.save();
+  if(on) playBgm(); else bgm.pause();
+  syncBgmUI();
+}
+// ブラウザの自動再生制限のため、タップ／キー操作のたびに「止まっていれば鳴らす」
+function kickAudio(e){
+  unlockAudio();
+  // BGMボタン・設定トグル自体の操作なら、そちらの処理にまかせる
+  if(e.target.closest && e.target.closest("#bgmToggle,label.toggle")) return;
+  if(store.data.music && bgm.paused) playBgm();
+}
+document.addEventListener("pointerdown", kickAudio, true);
+document.addEventListener("keydown", kickAudio, true);
+// アプリを切り替えたらBGMを止め、戻ってきたら再開（スマホで裏で鳴り続けないように）
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden) bgm.pause();
+  else if(store.data.music) playBgm();
+});
+
+/* ========================= 効果音（ファイル不要） ========================= */
+function beep(kind){
+  if(!store.data.sound) return;
+  unlockAudio();
+  if(!ac) return;
+  try{
+    const notes = kind==="ok" ? [660,880,1180] : kind==="ng" ? [300,220] : [520,660,880,1320];
+    notes.forEach((f,i)=>{
+      const o=ac.createOscillator(), g=ac.createGain();
+      o.type= kind==="ng" ? "sawtooth" : "triangle";
+      o.frequency.value=f;
+      const t=ac.currentTime + 0.005 + i*0.09;
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.12,t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+      o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+0.24);
+    });
+  }catch(e){}
+}
+
+/* ========================= 画面まわり ========================= */
+const $ = s=>document.querySelector(s);
+const screens = {home:$("#home"), quiz:$("#quiz"), result:$("#result")};
+function show(name){
+  Object.entries(screens).forEach(([k,el])=>el.hidden = k!==name);
+  window.scrollTo(0,0);
+}
+const qkey = (cid,i)=>cid+"#"+i;
+function findQ(k){
+  const [cid,i]=k.split("#");
+  const c=COURSES.find(x=>x.id===cid);
+  return c ? {...c.qs[+i], key:k, course:c} : null;
+}
+
+function renderHome(){
+  // コース
+  $("#courseList").innerHTML = COURSES.map(c=>{
+    const best = store.data.best[c.id] || 0;
+    const pct = Math.round(best / c.qs.length * 100);
+    const got = store.data.badges.includes(c.id);
+    return `<button class="course ${c.tone==='pink'?'pink':''}" data-course="${c.id}">
+      <div class="top"><h3>${c.name}</h3><span class="lv">${c.lv}</span></div>
+      <p class="desc">${c.desc}</p>
+      <div class="meter"><i style="width:${pct}%"></i></div>
+      <div class="stat"><span>${c.qs.length}問 ・ 目安3分</span><span>${got?`<b>${c.badge.icon} 獲得ずみ</b>`:`最高 ${best}/${c.qs.length}`}</span></div>
+    </button>`;
+  }).join("");
+  document.querySelectorAll("[data-course]").forEach(b=>{
+    b.onclick = ()=>startCourse(b.dataset.course);
+  });
+
+  // 要復習
+  const r = store.data.review;
+  $("#reviewCount").textContent = r.length ? `${r.length}問たまっています` : "まだ0問";
+  $("#reviewNote").textContent = r.length
+    ? "まちがえた問題だけを出題します。正解した問題はリストから消えます。"
+    : "まちがえた問題はここにたまります。正解するとリストから消えます。";
+  $("#reviewStart").disabled = r.length===0;
+
+  // バッジ
+  $("#badgeList").innerHTML = BADGES.map(b=>{
+    const on = store.data.badges.includes(b.id);
+    return `<div class="badge ${on?'on':''}">
+      <div class="icon">${b.icon}</div>
+      <div class="nm">${b.name}</div>
+      <div class="hint">${on?"獲得ずみ":b.hint}</div>
+    </div>`;
+  }).join("");
+
+  $("#timerOn").checked = store.data.timer;
+  $("#soundOn").checked = store.data.sound;
+}
+
+/* ========================= 出題 ========================= */
+let S = null; // 現在のセッション
+
+function startCourse(cid){
+  const c = COURSES.find(x=>x.id===cid);
+  S = {
+    mode:"course", cid, title:`${c.name}（${c.lv}）`,
+    list: c.qs.map((q,i)=>({...q, key:qkey(cid,i), course:c})),
+    i:0, results:[], t0:Date.now(), timerId:null
+  };
+  runQuiz();
+}
+function startReview(){
+  const list = store.data.review.map(findQ).filter(Boolean);
+  if(!list.length) return;
+  S = {mode:"review", title:"要復習リスト", list, i:0, results:[], t0:Date.now(), timerId:null};
+  runQuiz();
+}
+
+function runQuiz(){
+  show("quiz");
+  $("#quizTitle").textContent = S.title;
+  $("#timer").style.visibility = store.data.timer ? "visible" : "hidden";
+  clearInterval(S.timerId);
+  if(store.data.timer){
+    const tick=()=>{
+      const s = Math.floor((Date.now()-S.t0)/1000);
+      $("#timer").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+    };
+    tick(); S.timerId = setInterval(tick,1000);
+  }
+  renderQuestion();
+}
+
+function renderSteps(){
+  $("#steps").innerHTML = S.list.map((_,i)=>{
+    const r = S.results[i];
+    const cls = r===true?"done":r===false?"bad":i===S.i?"now":"";
+    return `<i class="${cls}"></i>`;
+  }).join("");
+}
+
+function renderQuestion(){
+  const q = S.list[S.i];
+  const pink = q.course.tone==="pink";
+  $("#mascot").className = "mascot";
+  setMark("");
+  $("#mascot").querySelector("img").src = pink ? "assets/pen-girl.png" : "assets/pen-boy.png";
+  document.documentElement.style.setProperty("--accent", pink?"var(--bloom)":"var(--ice)");
+  $("#qtext").style.borderLeftColor = pink ? "var(--bloom)" : "var(--ice)";
+
+  const typeName = {1:"役割から関数をえらぶ",2:"やりたいことから式をえらぶ",3:"結果を予想する"}[q.t];
+  const stars = {1:"★☆☆",2:"★★☆",3:"★★☆"}[q.t];
+  renderSteps();
+  $("#qmeta").innerHTML = `${S.i+1} / ${S.list.length}問目 ・ ${typeName} ・ <span class="star">${stars}</span>`;
+  $("#qtext").innerHTML = q.q;
+  $("#verdictSlot").innerHTML = "";
+
+  // 正解の位置が毎回かたよらないよう、選択肢の順番をシャッフル
+  S.order = shuffle(q.c.map((_,i)=>i));
+  $("#choices").innerHTML = S.order.map((ci,pos)=>{
+    const c = q.c[ci];
+    return `<button class="choice" data-i="${ci}"><span class="key">${KEYS[pos]}</span><span class="lbl ${/^=|^[A-Z#$"]/.test(c)?'f':''}">${escapeHTML(c)}</span></button>`;
+  }).join("");
+  document.querySelectorAll(".choice").forEach(b=>{
+    b.onclick = ()=>answer(+b.dataset.i);
+  });
+}
+// 〇✖マーク（✖は絵文字表示にならないよう異体字セレクタ FE0E を付ける）
+function setMark(kind){
+  [["#mark","mark"],["#markSm","mark-sm"]].forEach(([sel,base])=>{
+    const m = $(sel);
+    m.className = base + (kind ? " "+kind : "");
+    m.innerHTML = kind==="ok" ? '<span class="say">やったね！</span><span class="sym">〇</span>'
+                : kind==="ng" ? '<span class="say">おしい</span><span class="sym">✖&#xFE0E;</span>'
+                : "";
+  });
+}
+function escapeHTML(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+const KEYS = ["A","B","C","D","E"];
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function answer(pick){
+  const q = S.list[S.i];
+  const ok = pick===q.a;
+  S.results[S.i] = ok;
+  renderSteps();
+
+  document.querySelectorAll(".choice").forEach(b=>{
+    const i = +b.dataset.i;
+    b.disabled = true;
+    if(i===q.a) b.classList.add("right");
+    else if(i===pick) b.classList.add("wrong");
+  });
+
+  $("#mascot").className = "mascot " + (ok?"hop":"shake");
+  setMark(ok?"ok":"ng");
+  beep(ok?"ok":"ng");
+
+  // 要復習リストの更新
+  const set = new Set(store.data.review);
+  if(ok) set.delete(q.key); else { set.add(q.key); store.data.hadReview = true; }
+  store.data.review = [...set];
+  store.save();
+
+  $("#verdictSlot").innerHTML = `
+    <div class="verdict ${ok?'ok':'ng'}">
+      <p class="vt">${ok?'<span class="vm ok">〇</span>正解！':'<span class="vm ng">✖&#xFE0E;</span>おしい！ 正解は '+KEYS[S.order.indexOf(q.a)]}</p>
+      <dl>
+        <dt>書き方</dt><dd><span class="f">${escapeHTML(q.s)}</span></dd>
+        <dt>使用例</dt><dd><span class="f">${escapeHTML(q.e)}</span></dd>
+      </dl>
+      <p class="note">${q.n}</p>
+    </div>
+    <div class="nextrow"><button class="btn ${q.course.tone==='pink'?'pink':''}" id="nextBtn">${S.i+1<S.list.length?"次の問題へ":"結果を見る"}</button></div>`;
+  $("#nextBtn").focus();
+  $("#nextBtn").onclick = ()=>{
+    if(S.i+1 < S.list.length){ S.i++; renderQuestion(); }
+    else finish();
+  };
+}
+
+/* ========================= 結果 ========================= */
+function finish(){
+  clearInterval(S.timerId);
+  const correct = S.results.filter(Boolean).length;
+  const total = S.list.length;
+  const sec = Math.floor((Date.now()-S.t0)/1000);
+  const perfect = correct===total;
+  const newBadges = [];
+
+  if(S.mode==="course"){
+    const prev = store.data.best[S.cid] || 0;
+    if(correct > prev) store.data.best[S.cid] = correct;
+    if(perfect && !store.data.badges.includes(S.cid)){
+      store.data.badges.push(S.cid);
+      newBadges.push(BADGES.find(b=>b.id===S.cid));
+    }
+    if(COURSES.every(c=>store.data.badges.includes(c.id)) && !store.data.badges.includes("all")){
+      store.data.badges.push("all");
+      newBadges.push(BADGES.find(b=>b.id==="all"));
+    }
+  }
+  if(store.data.hadReview && store.data.review.length===0 && !store.data.badges.includes("review")){
+    store.data.badges.push("review");
+    newBadges.push(BADGES.find(b=>b.id==="review"));
+  }
+  store.save();
+  if(perfect) beep("fanfare");
+
+  const pink = S.mode==="review" || (S.list[0] && S.list[0].course.tone==="pink");
+  const msg = perfect ? "全問正解！みごとです。"
+    : correct/total >= 0.7 ? "あと少し。まちがえた問題は復習リストに入れました。"
+    : "まずは解説をもう一度。復習リストで巻き返しましょう。";
+
+  $("#resultCard").innerHTML = `
+    <img src="${pink?'assets/pen-girl.png':'assets/pen-boy.png'}" alt="" aria-hidden="true">
+    <p class="score">${correct}<span> / ${total}問</span></p>
+    <p class="msg">${msg}</p>
+    <p class="sub">かかった時間 ${Math.floor(sec/60)}分${sec%60}秒${store.data.review.length?` ・ 要復習 ${store.data.review.length}問`:""}</p>
+    ${newBadges.map(b=>`<div class="won"><div class="icon">${b.icon}</div><div class="nm">${b.name} を獲得！</div></div>`).join("")}
+    <div class="acts">
+      ${store.data.review.length?`<button class="btn pink" id="rvBtn">まちがえた問題を復習</button>`:""}
+      <button class="btn ghost" id="againBtn">もう一度</button>
+      <button class="btn" id="homeBtn">コース一覧へ</button>
+    </div>`;
+  show("result");
+  const rv = $("#rvBtn"); if(rv) rv.onclick = startReview;
+  $("#againBtn").onclick = ()=> S.mode==="course" ? startCourse(S.cid) : startReview();
+  $("#homeBtn").onclick = ()=>{ renderHome(); show("home"); };
+}
+
+/* ========================= イベント ========================= */
+$("#quitBtn").onclick = ()=>{ clearInterval(S && S.timerId); renderHome(); show("home"); };
+$("#reviewStart").onclick = startReview;
+$("#timerOn").onchange = e=>{ store.data.timer = e.target.checked; store.save(); };
+$("#soundOn").onchange = e=>{ store.data.sound = e.target.checked; store.save(); };
+$("#musicOn").onchange = e=> setMusic(e.target.checked);
+$("#musicVol").oninput = e=>{ store.data.vol = e.target.value/100; applyVol(); };
+$("#musicVol").onchange = ()=> store.save();
+$("#bgmToggle").onclick = ()=> setMusic(!store.data.music);
+$("#resetAll").onclick = ()=>{
+  if(confirm("最高記録・バッジ・要復習リストをすべて消します。よろしいですか？")){
+    store.data = {best:{}, badges:[], review:[], hadReview:false, timer:store.data.timer, sound:store.data.sound, music:store.data.music, vol:store.data.vol};
+    store.save(); renderHome();
+  }
+};
+document.addEventListener("keydown", e=>{
+  if(screens.quiz.hidden) return;
+  const idx = ["1","2","3","4","5"].indexOf(e.key);
+  const btns = document.querySelectorAll(".choice:not([disabled])");
+  if(idx>=0 && btns[idx]) btns[idx].click();
+  // フォーカス中のボタンとの二重反応で1問飛ばないよう、既定動作を止めてから進める
+  if(e.key==="Enter" && $("#nextBtn")){ e.preventDefault(); if(!e.repeat) $("#nextBtn").click(); }
+});
+
+renderHome();
+syncBgmUI();
+</script>
+</body>
+</html>
