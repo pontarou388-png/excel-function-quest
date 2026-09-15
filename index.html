@@ -222,7 +222,7 @@ h2 .pip{width:10px;height:10px;border-radius:3px;background:var(--ice);display:i
   .mascot-sm.hop img{animation:hop .5s ease}
   .mascot-sm.shake img{animation:shake .4s ease}
   .nextrow{position:fixed;left:12px;bottom:18px;margin:0;z-index:26}
-  .nextrow .btn{padding:14px 34px;font-size:16px;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .nextrow .btn{padding:9px 20px;font-size:14px;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.45)}
 }
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 
@@ -870,7 +870,16 @@ function answer(pick){
       <p class="note">${q.n}</p>
     </div>
     <div class="nextrow"><button class="btn ${q.course.tone==='pink'?'pink':''}" id="nextBtn">${S.i+1<S.list.length?"次の問題へ":"結果を見る"}</button></div>`;
-  $("#nextBtn").focus();
+  $("#nextBtn").focus({preventScroll:true});
+  // スマホ：解説の文字が画面下の「次の問題へ」に隠れないよう、解説の下はしがボタンより上に来るまでスクロール
+  // （なめらかスクロールや描画待ちは端末によって動かないことがあるので、その場で一気にスクロールする）
+  if(innerWidth <= 719){
+    const verdict = document.querySelector(".verdict"), next = $("#nextBtn");
+    if(verdict && next){
+      const over = verdict.getBoundingClientRect().bottom - (next.getBoundingClientRect().top - 12);
+      if(over > 0) window.scrollTo(0, window.scrollY + over);
+    }
+  }
   $("#nextBtn").onclick = ()=>{
     if(S.i+1 < S.list.length){ S.i++; window.scrollTo(0,0); renderQuestion(); }
     else finish();
